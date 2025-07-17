@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block title %}Stocker - Home{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">Trade Stocks with Confidence</h1>
+                <p class="lead mb-4">Join thousands of traders who trust Stocker for their investment needs. Start trading today with our intuitive platform.</p>
+                {% if not current_user.is_authenticated %}
+                    <div class="d-flex gap-3">
+                        <a href="{{ url_for('signup') }}" class="btn btn-light btn-lg">Get Started</a>
+                        <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg">Login</a>
+                    </div>
+                {% else %}
+                    <div class="d-flex gap-3">
+                        <a href="{{ url_for('user_dashboard') if not current_user.is_admin else url_for('admin_dashboard') }}" class="btn btn-light btn-lg">Go to Dashboard</a>
+                        <a href="{{ url_for('trade') }}" class="btn btn-outline-light btn-lg">Start Trading</a>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="col-lg-6">
+                <div class="text-center">
+                    <div class="bg-white rounded p-4 shadow">
+                        <h3 class="text-dark mb-3">Market Overview</h3>
+                        <div class="row text-center">
+                            <div class="col-4">
+                                <div class="text-success">
+                                    <h4>+2.5%</h4>
+                                    <small class="text-muted">S&P 500</small>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="text-success">
+                                    <h4>+1.8%</h4>
+                                    <small class="text-muted">NASDAQ</small>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="text-danger">
+                                    <h4>-0.3%</h4>
+                                    <small class="text-muted">DOW</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-lg-12">
+                <h2 class="fw-bold">Why Choose Stocker?</h2>
+                <p class="lead text-muted">Experience the future of stock trading</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 text-center p-4">
+                    <div class="card-body">
+                        <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                            <span class="fs-4">$</span>
+                        </div>
+                        <h5 class="card-title">Low Fees</h5>
+                        <p class="card-text text-muted">Trade with minimal fees and maximize your profits with our competitive pricing structure.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100 text-center p-4">
+                    <div class="card-body">
+                        <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                            <span class="fs-4">⚡</span>
+                        </div>
+                        <h5 class="card-title">Fast Execution</h5>
+                        <p class="card-text text-muted">Execute trades instantly with our high-speed trading platform and real-time market data.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100 text-center p-4">
+                    <div class="card-body">
+                        <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                            <span class="fs-4">🔒</span>
+                        </div>
+                        <h5 class="card-title">Secure Platform</h5>
+                        <p class="card-text text-muted">Your investments are protected with bank-level security and encryption technology.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Popular Stocks Section -->
+{% if stocks %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-lg-12 text-center">
+                <h2 class="fw-bold">Popular Stocks</h2>
+                <p class="lead text-muted">Trending stocks in the market</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            {% for stock in stocks %}
+            <div class="col-md-4">
+                <div class="card stock-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <h5 class="card-title mb-1">{{ stock.ticker }}</h5>
+                                <p class="text-muted small mb-0">{{ stock.name }}</p>
+                            </div>
+                            <span class="badge bg-secondary">{{ stock.sector }}</span>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h4 class="mb-0">${{ "%.2f"|format(stock.current_price) }}</h4>
+                                <small class="text-success">+1.2% today</small>
+                            </div>
+                            {% if current_user.is_authenticated and not current_user.is_admin %}
+                                <a href="{{ url_for('buy', stock_id=stock.id) }}" class="btn btn-primary btn-sm">Trade</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        {% if current_user.is_authenticated and not current_user.is_admin %}
+        <div class="text-center mt-4">
+            <a href="{{ url_for('trade') }}" class="btn btn-primary btn-lg">View All Stocks</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endif %}
+
+<!-- CTA Section -->
+{% if not current_user.is_authenticated %}
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h2 class="fw-bold mb-4">Ready to Start Trading?</h2>
+                <p class="lead mb-4">Join thousands of successful traders and start building your portfolio today.</p>
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="{{ url_for('signup') }}" class="btn btn-primary btn-lg">Create Account</a>
+                    <a href="{{ url_for('help') }}" class="btn btn-outline-primary btn-lg">Learn More</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}
