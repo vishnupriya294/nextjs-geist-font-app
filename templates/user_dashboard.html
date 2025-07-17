@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Stocker{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2">
+            <div class="sidebar p-3">
+                <h6 class="text-muted text-uppercase mb-3">Trading Panel</h6>
+                <ul class="nav nav-pills flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ url_for('user_dashboard') }}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('portfolio') }}">Portfolio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('trade') }}">Trade Stocks</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-md-9 col-lg-10">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">Dashboard</h1>
+                <div class="text-muted">
+                    Welcome back, {{ current_user.username }}
+                </div>
+            </div>
+            
+            <!-- Account Summary -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="card-title text-muted mb-2">Cash Balance</h6>
+                                    <h2 class="mb-0">${{ "%.2f"|format(balance) }}</h2>
+                                </div>
+                                <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                                    <span class="fs-5">💰</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="card-title text-muted mb-2">Portfolio Value</h6>
+                                    <h2 class="mb-0">${{ "%.2f"|format(portfolio_value) }}</h2>
+                                </div>
+                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                                    <span class="fs-5">📈</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="card-title text-muted mb-2">Total Value</h6>
+                                    <h2 class="mb-0">${{ "%.2f"|format(total_value) }}</h2>
+                                </div>
+                                <div class="bg-info text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                                    <span class="fs-5">💎</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Start Trading</h5>
+                            <p class="card-text text-muted">Buy and sell stocks with real-time prices</p>
+                            <a href="{{ url_for('trade') }}" class="btn btn-primary">Trade Now</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">View Portfolio</h5>
+                            <p class="card-text text-muted">Track your investments and performance</p>
+                            <a href="{{ url_for('portfolio') }}" class="btn btn-outline-primary">View Portfolio</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Transactions -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Recent Transactions</h5>
+                    <a href="{{ url_for('portfolio') }}" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if recent_transactions %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Stock</th>
+                                        <th>Type</th>
+                                        <th>Quantity</th>
+                                        <th>Price</th>
+                                        <th>Total</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for transaction in recent_transactions %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ transaction.stock.ticker }}</strong><br>
+                                            <small class="text-muted">{{ transaction.stock.name }}</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-{{ 'success' if transaction.type == 'buy' else 'danger' }}">
+                                                {{ transaction.type.upper() }}
+                                            </span>
+                                        </td>
+                                        <td>{{ transaction.quantity }}</td>
+                                        <td>${{ "%.2f"|format(transaction.price) }}</td>
+                                        <td>${{ "%.2f"|format(transaction.total_amount) }}</td>
+                                        <td>{{ transaction.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <p class="text-muted mb-3">No transactions yet</p>
+                            <a href="{{ url_for('trade') }}" class="btn btn-primary">Start Trading</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Market Overview -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Market Overview</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <div class="border-end">
+                                <h4 class="text-success">+2.5%</h4>
+                                <p class="text-muted mb-0">S&P 500</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="border-end">
+                                <h4 class="text-success">+1.8%</h4>
+                                <p class="text-muted mb-0">NASDAQ</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="border-end">
+                                <h4 class="text-danger">-0.3%</h4>
+                                <p class="text-muted mb-0">DOW</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <h4 class="text-success">+0.8%</h4>
+                            <p class="text-muted mb-0">Russell 2000</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Auto-refresh dashboard every 60 seconds
+    setTimeout(function() {
+        location.reload();
+    }, 60000);
+</script>
+{% endblock %}
