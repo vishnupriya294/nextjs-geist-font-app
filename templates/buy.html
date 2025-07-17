@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}Buy {{ stock.ticker }} - Stocker{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <!-- Back Button -->
+            <div class="mb-3">
+                <a href="{{ url_for('trade') }}" class="btn btn-outline-secondary">← Back to Trading</a>
+            </div>
+            
+            <!-- Stock Information -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h3 class="mb-1">{{ stock.ticker }}</h3>
+                            <p class="text-muted mb-2">{{ stock.name }}</p>
+                            <span class="badge bg-secondary">{{ stock.sector }}</span>
+                        </div>
+                        <div class="col-md-4 text-md-end">
+                            <h2 class="mb-0">${{ "%.2f"|format(stock.current_price) }}</h2>
+                            <small class="text-success">+0.5% today</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Buy Form -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Buy {{ stock.ticker }}</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('process_buy') }}">
+                        <input type="hidden" name="stock_id" value="{{ stock.id }}">
+                        
+                        <div class="mb-3">
+                            <label for="quantity" class="form-label">Number of Shares</label>
+                            <input type="number" class="form-control" id="quantity" name="quantity" min="1" required>
+                            <div class="form-text">Enter the number of shares you want to buy</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Order Summary</label>
+                            <div class="bg-light p-3 rounded">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Stock Price:</span>
+                                    <span>${{ "%.2f"|format(stock.current_price) }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Quantity:</span>
+                                    <span id="summary-quantity">0</span>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between fw-bold">
+                                    <span>Total Cost:</span>
+                                    <span id="total-cost">$0.00</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="bg-info bg-opacity-10 p-3 rounded">
+                                <div class="d-flex justify-content-between">
+                                    <span>Your Balance:</span>
+                                    <span class="fw-bold">${{ "%.2f"|format(current_user.balance) }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>Remaining After Purchase:</span>
+                                    <span id="remaining-balance" class="fw-bold">${{ "%.2f"|format(current_user.balance) }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg" id="buy-button">
+                                Buy {{ stock.ticker }}
+                            </button>
+                            <a href="{{ url_for('trade') }}" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Risk Warning -->
+            <div class="alert alert-warning mt-4">
+                <h6 class="alert-heading">Investment Risk Warning</h6>
+                <p class="mb-0">This is a demo trading platform. All transactions are simulated and no real money is involved. Stock prices may not reflect real market conditions.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const stockPrice = {{ stock.current_price }};
+    const userBalance = {{ current_user.balance }};
+    
+    document.getElementById('quantity').addEventListener('input', function() {
+        const quantity = parseInt(this.value) || 0;
+        const totalCost = quantity * stockPrice;
+        const remainingBalance = userBalance - totalCost;
+        
+        document.getElementById('summary-quantity').textContent = quantity;
+        document.getElementById('total-cost').textContent = '$' + totalCost.toFixed(2);
+        document.getElementById('remaining-balance').textContent = '$' + remainingBalance.toFixed(2);
+        
+        const buyButton = document.getElementById('buy-button');
+        if (totalCost > userBalance) {
+            buyButton.disabled = true;
+            buyButton.textContent = 'Insufficient Funds';
+            buyButton.classList.remove('btn-success');
+            buyButton.classList.add('btn-danger');
+            document.getElementById('remaining-balance').classList.add('text-danger');
+        } else {
+            buyButton.disabled = false;
+            buyButton.textContent = 'Buy {{ stock.ticker }}';
+            buyButton.classList.remove('btn-danger');
+            buyButton.classList.add('btn-success');
+            document.getElementById('remaining-balance').classList.remove('text-danger');
+        }
+    });
+</script>
+{% endblock %}
