@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}Trade Stocks - Stocker{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2">
+            <div class="sidebar p-3">
+                <h6 class="text-muted text-uppercase mb-3">Trading Panel</h6>
+                <ul class="nav nav-pills flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('user_dashboard') }}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('portfolio') }}">Portfolio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ url_for('trade') }}">Trade Stocks</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-md-9 col-lg-10">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">Trade Stocks</h1>
+                <div class="text-muted">
+                    Balance: ${{ "%.2f"|format(current_user.balance) }}
+                </div>
+            </div>
+            
+            <!-- Search Bar -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="GET" class="row g-3">
+                        <div class="col-md-10">
+                            <input type="text" class="form-control" name="search" placeholder="Search stocks by name or ticker..." value="{{ search_query }}">
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary w-100">Search</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Stock List -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Available Stocks</h5>
+                    <button class="btn btn-sm btn-outline-primary" onclick="updatePrices()">Refresh Prices</button>
+                </div>
+                <div class="card-body">
+                    {% if stocks %}
+                        <div class="row g-4">
+                            {% for stock in stocks %}
+                            <div class="col-md-6 col-lg-4">
+                                <div class="card stock-card h-100">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start mb-3">
+                                            <div>
+                                                <h5 class="card-title mb-1">{{ stock.ticker }}</h5>
+                                                <p class="text-muted small mb-0">{{ stock.name }}</p>
+                                            </div>
+                                            <span class="badge bg-secondary">{{ stock.sector }}</span>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <h4 class="mb-1">${{ "%.2f"|format(stock.current_price) }}</h4>
+                                            <small class="text-success">+0.5% today</small>
+                                        </div>
+                                        
+                                        <div class="d-grid gap-2">
+                                            <a href="{{ url_for('buy', stock_id=stock.id) }}" class="btn btn-success btn-sm">Buy</a>
+                                            <a href="{{ url_for('sell', stock_id=stock.id) }}" class="btn btn-outline-danger btn-sm">Sell</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            {% if search_query %}
+                                <h4>No stocks found</h4>
+                                <p class="text-muted mb-4">No stocks match your search criteria "{{ search_query }}"</p>
+                                <a href="{{ url_for('trade') }}" class="btn btn-primary">View All Stocks</a>
+                            {% else %}
+                                <h4>No stocks available</h4>
+                                <p class="text-muted">Please check back later</p>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Market Information -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Market Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Trading Hours</h6>
+                            <p class="text-muted">Market is open 24/7 for demo trading</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Important Notice</h6>
+                            <p class="text-muted">This is a demo trading platform. All transactions are simulated.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function updatePrices() {
+        fetch('/api/update_prices')
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    location.reload();
+                }
+            })
+            .catch(error => {
+                console.error('Error updating prices:', error);
+            });
+    }
+    
+    // Auto-refresh prices every 60 seconds
+    setInterval(function() {
+        updatePrices();
+    }, 60000);
+</script>
+{% endblock %}
