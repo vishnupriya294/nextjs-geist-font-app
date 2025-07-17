@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+
+{% block title %}Help & FAQ - Stocker{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bold">Help & Support</h1>
+                <p class="lead text-muted">Find answers to frequently asked questions and learn how to use Stocker</p>
+            </div>
+            
+            <!-- Quick Links -->
+            <div class="row g-4 mb-5">
+                <div class="col-md-4">
+                    <div class="card text-center h-100">
+                        <div class="card-body">
+                            <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                                <span class="fs-4">🚀</span>
+                            </div>
+                            <h5 class="card-title">Getting Started</h5>
+                            <p class="card-text">Learn the basics of trading on Stocker</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card text-center h-100">
+                        <div class="card-body">
+                            <div class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                                <span class="fs-4">📈</span>
+                            </div>
+                            <h5 class="card-title">Trading Guide</h5>
+                            <p class="card-text">Master buying and selling stocks</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card text-center h-100">
+                        <div class="card-body">
+                            <div class="bg-info text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                                <span class="fs-4">💼</span>
+                            </div>
+                            <h5 class="card-title">Portfolio Management</h5>
+                            <p class="card-text">Track and optimize your investments</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- FAQ Section -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="mb-0">Frequently Asked Questions</h3>
+                </div>
+                <div class="card-body">
+                    <div class="accordion" id="faqAccordion">
+                        <!-- FAQ 1 -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="faq1">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1">
+                                    How do I get started with Stocker?
+                                </button>
+                            </h2>
+                            <div id="collapse1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    <p>Getting started is easy:</p>
+                                    <ol>
+                                        <li>Create an account by clicking "Sign Up"</li>
+                                        <li>You'll receive $10,000 in demo money to start trading</li>
+                                        <li>Browse available stocks in the "Trade" section</li>
+                                        <li>Buy your first stock and start building your portfolio</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- FAQ 2 -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="faq2">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2">
+                                    Is this real money trading?
+                                </button>
+                            </h2>
+                            <div id="collapse2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    <p><strong>No, this is a demo trading platform.</strong> All transactions are simulated and no real money is involved. This platform is designed for:</p>
+                                    <ul>
+                                        <li>Learning how stock trading works</li>
+                                        <li>Practicing investment strategies</li>
+                                        <li>Understanding market dynamics</li>
+                                        <li>Building confidence before real trading</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- FAQ 3 -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="faq3">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3">
+                                    How do I buy and sell stocks?
+                                </button>
+                            </h2>
+                            <div id="collapse3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    <p><strong>To Buy Stocks:</strong></p>
+                                    <ol>
+                                        <li>Go to the "Trade" section</li>
+                                        <li>Browse or search for stocks</li>
+                                        <li>Click "Buy" on your desired stock</li>
+                                        <li>Enter the number of shares</li>
+                                        <li>Review and confirm your order</li>
+                                    </ol>
+                                    <p><strong>To Sell Stocks:</strong></p>
+                                    <ol>
+                                        <li>Go to your "Portfolio"</li>
+                                        <li>Find the stock you want to sell</li>
+                                        <li>Click "Sell"</li>
+                                        <li>Enter the number of shares to sell</li>
+                                        <li>Confirm your sell order</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- FAQ 4 -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="faq4">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse4">
+                                    How do I track my portfolio performance?
+                                </button>
+                            </h2>
+                            <div id="collapse4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    <p>Your portfolio performance is tracked automatically:</p>
+                                    <ul>
+                                        <li><strong>Dashboard:</strong> View your total portfolio value and recent transactions</li>
+                                        <li><strong>Portfolio Page:</strong> See detailed holdings, gains/losses, and allocation</li>
+                                        <li><strong>Real-time Updates:</strong> Stock prices update automatically</li>
+                                        <li><strong>Performance Metrics:</strong> Track percentage gains/losses for each holding</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- FAQ 5 -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="faq5">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse5">
+                                    Are the stock prices real?
+                                </button>
+                            </h2>
+                            <div id="collapse5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    <p>The stock prices are simulated for demo purposes. While they're based on real company tickers and approximate real market values, they:</p>
+                                    <ul>
+                                        <li>May not reflect actual current market prices</li>
+                                        <li>Are updated periodically with simulated changes</li>
+                                        <li>Are designed to provide a realistic trading experience</li>
+                                        <li>Should not be used for real investment decisions</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- FAQ 6 -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="faq6">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse6">
+                                    What happens if I run out of money?
+                                </button>
+                            </h2>
+                            <div id="collapse6" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    <p>If you spend all your demo money:</p>
+                                    <ul>
+                                        <li>You can still sell your existing holdings</li>
+                                        <li>You won't be able to buy new stocks until you have sufficient balance</li>
+                                        <li>Contact support if you need your demo balance reset</li>
+                                        <li>This is a great learning opportunity about risk management!</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Contact Support -->
+            <div class="card mt-4">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Still Need Help?</h5>
+                    <p class="card-text text-muted">Can't find what you're looking for? Our support team is here to help.</p>
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="mailto:support@stocker.com" class="btn btn-primary">Email Support</a>
+                        <a href="#" class="btn btn-outline-primary">Live Chat</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Trading Tips -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Trading Tips for Beginners</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>✅ Do's</h6>
+                            <ul class="list-unstyled">
+                                <li class="mb-2">✓ Start with small investments</li>
+                                <li class="mb-2">✓ Diversify your portfolio</li>
+                                <li class="mb-2">✓ Research before investing</li>
+                                <li class="mb-2">✓ Set realistic goals</li>
+                                <li class="mb-2">✓ Learn from your mistakes</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>❌ Don'ts</h6>
+                            <ul class="list-unstyled">
+                                <li class="mb-2">✗ Don't invest all in one stock</li>
+                                <li class="mb-2">✗ Don't panic sell</li>
+                                <li class="mb-2">✗ Don't follow trends blindly</li>
+                                <li class="mb-2">✗ Don't ignore risk management</li>
+                                <li class="mb-2">✗ Don't trade with emotions</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
