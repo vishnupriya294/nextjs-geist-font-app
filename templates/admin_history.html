@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block title %}Transaction History - Admin - Stocker{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2">
+            <div class="sidebar p-3">
+                <h6 class="text-muted text-uppercase mb-3">Admin Panel</h6>
+                <ul class="nav nav-pills flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin_manage') }}">Manage Users</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ url_for('admin_history') }}">Transaction History</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-md-9 col-lg-10">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">Transaction History</h1>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary" onclick="exportTransactions()">Export CSV</button>
+                    <button class="btn btn-outline-secondary" onclick="location.reload()">Refresh</button>
+                </div>
+            </div>
+            
+            <!-- Filters -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="GET" class="row g-3">
+                        <div class="col-md-3">
+                            <label for="user_filter" class="form-label">User</label>
+                            <select class="form-select" id="user_filter" name="user">
+                                <option value="">All Users</option>
+                                <!-- Add user options dynamically -->
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="type_filter" class="form-label">Transaction Type</label>
+                            <select class="form-select" id="type_filter" name="type">
+                                <option value="">All Types</option>
+                                <option value="buy">Buy</option>
+                                <option value="sell">Sell</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="date_from" class="form-label">From Date</label>
+                            <input type="date" class="form-control" id="date_from" name="date_from">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="date_to" class="form-label">To Date</label>
+                            <input type="date" class="form-control" id="date_to" name="date_to">
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary">Apply Filters</button>
+                            <a href="{{ url_for('admin_history') }}" class="btn btn-outline-secondary">Clear Filters</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Transaction Statistics -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h3 class="text-primary">{{ transactions|length }}</h3>
+                            <p class="text-muted mb-0">Total Transactions</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h3 class="text-success">{{ transactions|selectattr("type", "equalto", "buy")|list|length }}</h3>
+                            <p class="text-muted mb-0">Buy Orders</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h3 class="text-danger">{{ transactions|selectattr("type", "equalto", "sell")|list|length }}</h3>
+                            <p class="text-muted mb-0">Sell Orders</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h3 class="text-info">${{ "%.2f"|format(transactions|sum(attribute="total_amount")) }}</h3>
+                            <p class="text-muted mb-0">Total Volume</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Transactions Table -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">All Transactions</h5>
+                </div>
+                <div class="card-body">
+                    {% if transactions %}
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="transactionsTable">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Date & Time</th>
+                                        <th>User</th>
+                                        <th>Stock</th>
+                                        <th>Type</th>
+                                        <th>Quantity</th>
+                                        <th>Price</th>
+                                        <th>Total Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for transaction in transactions %}
+                                    <tr>
+                                        <td>#{{ transaction.id }}</td>
+                                        <td>{{ transaction.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                                        <td>
+                                            <strong>{{ transaction.user.username }}</strong><br>
+                                            <small class="text-muted">{{ transaction.user.email }}</small>
+                                        </td>
+                                        <td>
+                                            <strong>{{ transaction.stock.ticker }}</strong><br>
+                                            <small class="text-muted">{{ transaction.stock.name }}</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-{{ 'success' if transaction.type == 'buy' else 'danger' }}">
+                                                {{ transaction.type.upper() }}
+                                            </span>
+                                        </td>
+                                        <td>{{ transaction.quantity }}</td>
+                                        <td>${{ "%.2f"|format(transaction.price) }}</td>
+                                        <td>${{ "%.2f"|format(transaction.total_amount) }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <div class="mb-4">
+                                <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                    <span class="fs-1">📊</span>
+                                </div>
+                            </div>
+                            <h4>No Transactions Found</h4>
+                            <p class="text-muted">No transactions match your current filters</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function exportTransactions() {
+        // Simple CSV export functionality
+        const table = document.getElementById('transactionsTable');
+        if (!table) return;
+        
+        let csv = [];
+        const rows = table.querySelectorAll('tr');
+        
+        for (let i = 0; i < rows.length; i++) {
+            const row = [];
+            const cols = rows[i].querySelectorAll('td, th');
+            
+            for (let j = 0; j < cols.length; j++) {
+                let data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, '').replace(/(\s\s)/gm, ' ');
+                data = data.replace(/"/g, '""');
+                row.push('"' + data + '"');
+            }
+            csv.push(row.join(','));
+        }
+        
+        const csvFile = new Blob([csv.join('\n')], { type: 'text/csv' });
+        const downloadLink = document.createElement('a');
+        downloadLink.download = 'transactions_' + new Date().toISOString().split('T')[0] + '.csv';
+        downloadLink.href = window.URL.createObjectURL(csvFile);
+        downloadLink.style.display = 'none';
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    }
+    
+    // Set today's date as default for date filters
+    document.addEventListener('DOMContentLoaded', function() {
+        const today = new Date().toISOString().split('T')[0];
+        const dateFrom = document.getElementById('date_from');
+        const dateTo = document.getElementById('date_to');
+        
+        if (!dateFrom.value) {
+            const weekAgo = new Date();
+            weekAgo.setDate(weekAgo.getDate() - 7);
+            dateFrom.value = weekAgo.toISOString().split('T')[0];
+        }
+        
+        if (!dateTo.value) {
+            dateTo.value = today;
+        }
+    });
+</script>
+{% endblock %}
